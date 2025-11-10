@@ -13,7 +13,8 @@ export async function ConnectToDatabase(){
         return cachedDb;
     }
 
-    const client = new MongoClient(uri,{useNewUrlParseer:true,useUnfiedTopology:true});
+    const client = new MongoClient(uri);
+
     await client.connect();
     const db = client.db();
     global._mongoClient = client;

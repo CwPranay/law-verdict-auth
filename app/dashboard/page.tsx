@@ -1,5 +1,6 @@
 "use client";
 import { useUser } from "@auth0/nextjs-auth0/client";
+
 import { useState, useEffect } from "react";
 
 export default function DashboardPage() {
@@ -15,7 +16,7 @@ export default function DashboardPage() {
         const fetchUser = async () => {
             setLoadingPhone(true);
             try {
-                const res = await fetch(`/api/users?userId=${encodeURIComponent(user.sub)}`);
+                const res = await fetch(`/api/users?userId=${encodeURIComponent(user?.sub??"")}`);
                 if (res.ok) {
                     const json = await res.json();
                     if (json && json.phone) {
@@ -125,7 +126,7 @@ export default function DashboardPage() {
                         {message && <p className="text-sm mt-2 text-gray-700">{message}</p>}
                     </div>
                 )}
-
+                <a href="/api/auth/logout" className="text-sm text-red-500">Logout</a>
                 <div className="mt-4 text-xs text-gray-500">
                     <p>Note: Your phone number is stored only for this demo and used to display on the private page.</p>
                 </div>

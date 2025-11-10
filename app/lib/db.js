@@ -1,23 +1,30 @@
-import {MongoClient} from 'mongodb';
+import { MongoClient } from "mongodb";
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
-    throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
+  throw new Error("Please define the MONGODB_URI environment variable inside .env.local");
 }
 
-let cachedClient = global._mongoClient;
-let cachedDb = global._mongoDb;
+let cached = global._mongoCache;
 
-export async function ConnectToDatabase(){
-    if (cachedClient && cachedDb) {
-        return cachedDb;
-    }
+if (!cached) {
+  cached = global._mongoCache = { client: null, db: null };
+}
 
-    const client = new MongoClient(uri);
+export async function ConnectToDatabase() {
+  if (cached.db) {
+    return cached.db;
+  }
 
-    await client.connect();
-    const db = client.db();
-    global._mongoClient = client;
-    global._mongoDb = db;
-    return db;
+  const client = new MongoClient(uri, {
+    serverSelectionTimeoutMS: 5000, // fail faster if cluster unreachable
+  });
+
+  await client.connect();
+  const db = client.db();
+
+  cached.client = client;
+  cached.db = db;
+
+  return db;
 }

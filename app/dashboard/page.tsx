@@ -127,9 +127,7 @@ export default function DashboardPage() {
                     </div>
                 )}
                 <a href="/api/auth/logout" className="text-sm text-red-500">Logout</a>
-                <div className="mt-4 text-xs text-gray-500">
-                    <p>Note: Your phone number is stored only for this demo and used to display on the private page.</p>
-                </div>
+                
             </div>
         </main>
     );

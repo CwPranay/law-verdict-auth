@@ -5,7 +5,7 @@ import { MAX_DEVICES } from "../../../config";
 export async function POST(req) {
     try {
         const { userId, deviceIdToRemove, currentDeviceId } = await req.json();
-        if (!userId || !deviceIdToRemove || !deviceIdToKeep) {
+        if (!userId || !deviceIdToRemove || !currentDeviceId) {
             return NextResponse.json({ message: "Missing required parameters" }, { status: 400 });
         }
 

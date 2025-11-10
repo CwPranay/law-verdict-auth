@@ -1,7 +1,7 @@
 "use client";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import UAParser from "ua-parser-js"; // ✅ correct import
+import { UAParser } from "ua-parser-js"; // ✅ correct import
 
 interface SessionType {
     deviceId: string;
@@ -70,7 +70,8 @@ export default function SessionOverflowPage() {
 
                 <ul className="space-y-3 mb-6">
                     {sessions.map((s) => {
-                        const parser = new (UAParser as any)(s.userAgent); // ✅ fixed
+                        const parser = new UAParser(s.userAgent);
+
                         const result = parser.getResult();
                         const browser = result.browser.name || "Unknown Browser";
                         const os = result.os.name || "Unknown OS";

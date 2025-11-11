@@ -19,7 +19,7 @@ export default handleAuth({
         req.socket?.remoteAddress ||
         "unknown";
 
-      // 🧠 Check current active session count before adding
+      //  Check current active session count before adding
       const activeCount = await sessions.countDocuments({
         userId,
         isActive: true,
@@ -33,7 +33,7 @@ export default handleAuth({
         }`
       );
 
-      // ❌ If already at limit, redirect to overflow page (no new session)
+      //  If already at limit, redirect to overflow page (no new session)
       if (activeCount >= MAX_DEVICES) {
         const redirectUrl = `/session-overflow?userId=${encodeURIComponent(
           userId
@@ -46,7 +46,7 @@ export default handleAuth({
         return;
       }
 
-      // ✅ Otherwise, insert new session and continue
+      //  Otherwise, insert new session and continue
       await sessions.insertOne({
         userId,
         deviceId,

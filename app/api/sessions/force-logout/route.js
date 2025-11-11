@@ -12,11 +12,8 @@ export async function POST(req) {
         const db = await ConnectToDatabase();
         const sessions = db.collection("sessions");
 
-        //deactive the selected old device
-        await sessions.updateOne(
-            { userId, deviceId: deviceIdToRemove },
-            { $set: { isActive: false } }
-        )
+       // Remove the selected device session completely
+        await sessions.deleteOne({ userId, deviceId: deviceIdToRemove });
 
         await sessions.updateOne(
             { userId, deviceId: currentDeviceId },

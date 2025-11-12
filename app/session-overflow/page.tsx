@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { UAParser } from "ua-parser-js";
@@ -107,12 +108,12 @@ export default function SessionOverflowPage() {
 
         {/* Actions */}
         <div className="flex flex-col gap-2">
-          <a
+          <Link
             href="/api/auth/logout"
             className="bg-[#FFD700]  hover:bg-[#E6C200] text-black font-semibold text-s  px-4 py-3.5 rounded-md mt-3 sm:mt-0 transition-colors disabled:opacity-60"
           >
             Cancel login
-          </a>
+          </Link>
           {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
         </div>
       </div>

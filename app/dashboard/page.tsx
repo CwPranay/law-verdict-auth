@@ -1,5 +1,6 @@
 "use client";
 import { useUser } from "@auth0/nextjs-auth0/client";
+import Link from "next/link";
 
 import { useState, useEffect } from "react";
 
@@ -129,12 +130,12 @@ export default function DashboardPage() {
                             >
                                 {loadingPhone ? 'Saving...' : 'Save phone'}
                             </button>
-                            <a href="/api/auth/logout" className="text-sm text-red-500">Logout</a>
+                            <Link href="/api/auth/logout" className="text-sm text-red-500">Logout</Link>
                         </div>
                         {message && <p className="text-sm mt-2 text-gray-700">{message}</p>}
                     </div>
                 )}
-                {savedPhone && (<a href="/api/auth/logout" className="text-sm text-red-500">Logout</a>)}
+                {savedPhone && (<Link href="/api/auth/logout" className="text-sm text-red-500">Logout</Link>)}
 
             </div>
         </main>

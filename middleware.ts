@@ -4,54 +4,57 @@ import { getSession } from "@auth0/nextjs-auth0";
 import { NextRequest, NextResponse } from "next/server";
 import { ConnectToDatabase } from "./app/lib/db";
 
-
-
-async function customMiddleware(req:NextRequest) {
-  const url = req.nextUrl;
-  const response = NextResponse.next();
+export default async function middleware(req: NextRequest) {
+  const res = NextResponse.next();
 
   try {
-    //  Get Auth0 session
-    const session = await getSession(req, response);
+    const session = await getSession(req, res);
+    const url = req.nextUrl;
+
+    //  No Auth0 session → go to login
     if (!session?.user) {
-      return NextResponse.redirect(new URL("/api/auth/login", req.url));
+      const loginUrl = new URL("/api/auth/login", req.url);
+      loginUrl.searchParams.set("returnTo", "/dashboard");
+      return NextResponse.redirect(loginUrl);
     }
 
-    // Get deviceId from cookies
+    //  Check for device cookie
     const deviceId = req.cookies.get("deviceId")?.value;
     if (!deviceId) {
-      console.warn("No deviceId cookie found");
-      return response; // should return a response, not "NextResponse"
+      console.warn("⚠️ Missing deviceId cookie, redirecting to login");
+      const loginUrl = new URL("/api/auth/login", req.url);
+      loginUrl.searchParams.set("returnTo", "/dashboard");
+      return NextResponse.redirect(loginUrl);
     }
 
-    // Verify session still active
+    //  Validate active session in DB
     const db = await ConnectToDatabase();
-    const active = await db.collection("sessions").findOne({
+    const sessionDoc = await db.collection("sessions").findOne({
       userId: session.user.sub,
       deviceId,
       isActive: true,
     });
 
-    if (!active) {
-      console.log("Inactive session detected, logging out device:", deviceId);
-      const logoutResponse = NextResponse.redirect(new URL("/forced-logout", req.url));
+    //  Inactive session — force logout properly
+    if (!sessionDoc) {
+      console.log(`Inactive session detected for device ${deviceId}`);
 
-      // Clear cookies
-      logoutResponse.cookies.set("appSession", "", { maxAge: 0, path: "/" });
-      logoutResponse.cookies.set("deviceId", "", { maxAge: 0, path: "/" });
+      // Clear both cookies to remove local session state
+      const logoutRes = NextResponse.redirect(new URL("/forced-logout", req.url));
+      logoutRes.cookies.set("appSession", "", { maxAge: 0, path: "/" });
+      logoutRes.cookies.set("deviceId", "", { maxAge: 0, path: "/" });
 
-      return logoutResponse;
+      return logoutRes;
     }
 
-  } catch (error) {
-    console.error("Error in middleware:", error);
+    // ✅ Session active → continue normally
+    return res;
+
+  } catch (err) {
+    console.error("❌ Middleware error:", err);
+    return NextResponse.redirect(new URL("/api/auth/login", req.url));
   }
-
-  return response;
 }
-
-//  Wrap your custom middleware
-export default customMiddleware;
 
 export const config = {
   matcher: ["/dashboard/:path*"],

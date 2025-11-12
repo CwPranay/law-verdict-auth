@@ -1,22 +1,20 @@
 "use client";
 
-import { Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
-export const dynamic = "force-dynamic";
+export default function ForcedLogoutPage() {
+  useEffect(() => {
+    if (typeof document === "undefined") return;
 
+    const hasLogoutFlag = document.cookie.includes("forceLogoutFlag=true");
+    if (!hasLogoutFlag) window.location.href = "/";
+  }, []);
 
-function ForcedLogoutContent() {
-  const router = useRouter();
-  const params = useSearchParams();
-  const reason = params?.get("reason");
-
-  // Prevent manual access
-  if (reason !== "session_expired") {
-    if (typeof window !== "undefined") router.replace("/");
-    return null;
-  }
+  const handleLoginAgain = () => {
+    document.cookie = "forceLogoutFlag=; Max-Age=0; Path=/";
+    window.location.href = "/api/auth/login?returnTo=/dashboard";
+  };
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-black text-white px-4">
@@ -36,22 +34,12 @@ function ForcedLogoutContent() {
 
         <Button
           size="lg"
-          onClick={() =>
-            (window.location.href = "/api/auth/login?returnTo=/dashboard")
-          }
+          onClick={handleLoginAgain}
           className="w-full cursor-pointer bg-[#FFD700] hover:bg-[#E6C200] text-black font-semibold py-3 rounded-md transition-all duration-200"
         >
           Login Again
         </Button>
       </div>
     </main>
-  );
-}
-
-export default function ForcedLogoutPage() {
-  return (
-    <Suspense fallback={<div className="text-center text-white mt-10">Loading...</div>}>
-      <ForcedLogoutContent />
-    </Suspense>
   );
 }

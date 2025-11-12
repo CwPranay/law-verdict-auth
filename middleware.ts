@@ -47,6 +47,12 @@ export default async function middleware(req: NextRequest) {
       // Clear all cookies to invalidate this browser’s state
       logoutRes.cookies.set("appSession", "", { maxAge: 0, path: "/" });
       logoutRes.cookies.set("deviceId", "", { maxAge: 0, path: "/" });
+      logoutRes.cookies.set("forceLogoutFlag", "true", {
+        maxAge: 60 * 60 * 24 * 7, // 7 days (persistent until login)
+        path: "/",
+        httpOnly: false,
+        sameSite: "lax",
+      });
 
       return logoutRes;
     }

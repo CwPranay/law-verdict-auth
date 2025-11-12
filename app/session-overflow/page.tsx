@@ -1,7 +1,8 @@
 "use client";
+
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { UAParser } from "ua-parser-js";
 
 interface SessionType {
@@ -10,7 +11,7 @@ interface SessionType {
   createdAt: string;
 }
 
-export default function SessionOverflowPage() {
+function SessionOverflowContent() {
   const params = useSearchParams();
   const router = useRouter();
   const userId = params?.get("userId");
@@ -59,14 +60,14 @@ export default function SessionOverflowPage() {
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-black text-white px-4">
-      <div className="bg-[#111111] p-8 rounded-2xl shadow-[0_0_5px_rgba(255,215,0,0.1)] max-w-lg w-full text-center">
+      <div className="bg-[#111111] p-8 rounded-2xl shadow-[0_0_8px_rgba(255,215,0,0.2)] max-w-lg w-full text-center border border-[#1F1F1F]">
         {/* Title */}
         <h1 className="text-2xl font-bold mb-2 text-[#FFD700] tracking-wide">
           Device Limit Reached
         </h1>
-        <p className="text-sm text-gray-300 mb-6">
-          You’re already logged in on 3 devices.  
-          Select one to log out and continue:
+        <p className="text-sm text-gray-300 mb-6 leading-relaxed">
+          You’re already logged in on 3 devices.<br />
+          Select one to log out and continue.
         </p>
 
         {/* Session list */}
@@ -110,13 +111,21 @@ export default function SessionOverflowPage() {
         <div className="flex flex-col gap-2">
           <Link
             href="/api/auth/logout"
-            className="bg-[#FFD700]  hover:bg-[#E6C200] text-black font-semibold text-s  px-4 py-3.5 rounded-md mt-3 sm:mt-0 transition-colors disabled:opacity-60"
+            className="bg-[#FFD700] hover:bg-[#E6C200] text-black font-semibold text-sm px-5 py-2 rounded-md transition-colors"
           >
-            Cancel login
+            Cancel Login
           </Link>
           {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
         </div>
       </div>
     </main>
+  );
+}
+
+export default function SessionOverflowPage() {
+  return (
+    <Suspense fallback={<div className="text-center text-white mt-20">Loading…</div>}>
+      <SessionOverflowContent />
+    </Suspense>
   );
 }

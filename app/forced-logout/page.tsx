@@ -11,12 +11,15 @@ export default function ForcedLogoutPage() {
           Your session was ended because your account was logged in from another
           device.
         </p>
-        <a
-          href="/api/auth/login"
-          className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded text-white"
+        <button
+          onClick={() => {
+            window.location.href = "/api/auth/login?returnTo=/dashboard";
+          }}
+          className="bg-yellow-500 text-black px-4 py-2 rounded-md font-semibold"
         >
-          Login again
-        </a>
+          Login Again
+        </button>
+
       </div>
     </main>
   );

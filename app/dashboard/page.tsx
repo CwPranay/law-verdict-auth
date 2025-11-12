@@ -16,7 +16,7 @@ export default function DashboardPage() {
         const fetchUser = async () => {
             setLoadingPhone(true);
             try {
-                const res = await fetch(`/api/users?userId=${encodeURIComponent(user?.sub??"")}`);
+                const res = await fetch(`/api/users?userId=${encodeURIComponent(user?.sub ?? "")}`);
                 if (res.ok) {
                     const json = await res.json();
                     if (json && json.phone) {
@@ -45,7 +45,15 @@ export default function DashboardPage() {
 
     if (isLoading) return <div className="p-6">Loading user...</div>;
     if (error) return <div className="p-6 text-red-600">Error: {error.message}</div>;
-    if (!user) return <div className="p-6"><a href="/api/auth/login" className="underline">Login</a></div>;
+    if (!user) return <div className="p-6"><button
+        onClick={() => {
+            window.location.href = "/api/auth/login?returnTo=/dashboard";
+        }}
+        className="bg-yellow-500 text-black px-4 py-2 rounded-md font-semibold"
+    >
+        Login
+    </button>
+    </div>;
 
     const savePhone = async () => {
         if (!phoneInput.trim()) {
@@ -126,8 +134,8 @@ export default function DashboardPage() {
                         {message && <p className="text-sm mt-2 text-gray-700">{message}</p>}
                     </div>
                 )}
-                <a href="/api/auth/logout" className="text-sm text-red-500">Logout</a>
-                
+                {savedPhone && (<a href="/api/auth/logout" className="text-sm text-red-500">Logout</a>)}
+
             </div>
         </main>
     );

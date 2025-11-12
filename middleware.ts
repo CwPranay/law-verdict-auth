@@ -1,8 +1,10 @@
-import { getSession, withMiddlewareAuthRequired } from "@auth0/nextjs-auth0/edge";
+export const runtime = "nodejs";
+
+import { getSession } from "@auth0/nextjs-auth0";
 import { NextRequest, NextResponse } from "next/server";
 import { ConnectToDatabase } from "./app/lib/db";
 
-export const runtime = "nodejs";
+
 
 async function customMiddleware(req:NextRequest) {
   const url = req.nextUrl;
@@ -49,7 +51,7 @@ async function customMiddleware(req:NextRequest) {
 }
 
 //  Wrap your custom middleware
-export default withMiddlewareAuthRequired(customMiddleware);
+export default customMiddleware;
 
 export const config = {
   matcher: ["/dashboard/:path*"],

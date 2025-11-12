@@ -1,17 +1,34 @@
-import Link from "next/link";
-
+"use client";
 
 export default function Home() {
   return (
-    <main className="flex flex-col items-center justify-center h-screen bg-black text-white">
-      <h1 className="text-4xl font-bold mb-6">Law & Verdict</h1>
-      <p className="mb-8 text-gray-400">Your secure access portal</p>
-      <Link
-        href="/api/auth/login?returnTo=/dashboard"
-        className="px-6 py-3 bg-yellow-500 text-black rounded-md font-semibold"
+    <main className="flex flex-col items-center justify-center h-screen bg-linear-to-b from-[#0B0B0B] to-[#151515] text-white font-sans px-6">
+      
+      <h1 className="text-5xl font-extrabold mb-4 tracking-wide">
+        <span className="text-[#FFD700] ">
+          Law&nbsp;& Verdict
+        </span>
+        
+      </h1>
+
+      
+      <p className="text-gray-400 text-center mb-10 max-w-md text-lg leading-relaxed">
+        Securely access your legal insights and case management with confidence.
+      </p>
+
+      
+      <button
+        onClick={() => {
+          window.location.href = "/api/auth/login?returnTo=/dashboard";
+        }}
+        className="relative group px-8 py-3 text-black font-semibold bg-[#FFD700] rounded-md overflow-hidden transition-all duration-300 hover:bg-[#EAB308] shadow-[0_0_5px_rgba(255,215,0,0.4)] hover:shadow-[0_0_10px_rgba(255,215,0,0.6)]"
       >
-        Login
-      </Link>
+        <span className="relative z-10 cursor-pointer tracking-wide">Login</span>
+        
+      </button>
+
+      
+      
     </main>
   );
 }

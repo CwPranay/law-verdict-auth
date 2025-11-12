@@ -1,9 +1,9 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { UAParser } from "ua-parser-js";
 
 interface SessionType {
@@ -14,7 +14,7 @@ interface SessionType {
 
 function SessionOverflowContent() {
   const params = useSearchParams();
-  const router = useRouter();
+
   const userId = params?.get("userId");
   const currentDeviceId = params?.get("deviceId");
 
@@ -111,8 +111,8 @@ function SessionOverflowContent() {
         {/* Actions */}
         <div className="flex flex-col gap-2">
           <Button
-          size="lg"
-            onClick={()=>{window.location.href="/api/auth/logout"}}
+            size="lg"
+            onClick={() => { window.location.href = "/api/auth/logout" }}
             className="bg-[#FFD700] hover:bg-[#E6C200] text-black font-semibold "
           >
             Cancel Login

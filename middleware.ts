@@ -62,5 +62,5 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/((?!api|_next|forced-logout).*)"], // exclude forced-logout route
 };

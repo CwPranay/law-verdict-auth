@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import Link from "next/link";
 import { useState, useEffect } from "react";
 
 export default function DashboardPage() {

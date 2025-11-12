@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { useSearchParams, useRouter } from "next/navigation";
 import { UAParser } from "ua-parser-js";
 
@@ -94,13 +95,13 @@ function SessionOverflowContent() {
                       {new Date(s.createdAt).toLocaleString()}
                     </p>
                   </div>
-                  <button
+                  <Button
                     onClick={() => handleRemove(s.deviceId)}
                     disabled={loading}
                     className="bg-[#FFD700] hover:bg-[#E6C200] cursor-pointer text-black font-semibold text-xs px-4 py-1.5 rounded-md mt-3 sm:mt-0 transition-colors disabled:opacity-60"
                   >
                     Remove
-                  </button>
+                  </Button>
                 </li>
               );
             })
@@ -109,12 +110,13 @@ function SessionOverflowContent() {
 
         {/* Actions */}
         <div className="flex flex-col gap-2">
-          <Link
-            href="/api/auth/logout"
-            className="bg-[#FFD700] hover:bg-[#E6C200] text-black font-semibold text-sm px-5 py-2 rounded-md transition-colors"
+          <Button
+          size="lg"
+            onClick={()=>{window.location.href="/api/auth/logout"}}
+            className="bg-[#FFD700] hover:bg-[#E6C200] text-black font-semibold "
           >
             Cancel Login
-          </Link>
+          </Button>
           {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
         </div>
       </div>

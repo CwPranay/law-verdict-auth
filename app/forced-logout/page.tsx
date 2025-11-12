@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 
 
@@ -40,14 +41,15 @@ export default function ForcedLogoutPage() {
         </p>
 
 
-        <button
+        <Button
+        size="lg"
           onClick={() => {
             window.location.href = "/api/auth/login?returnTo=/dashboard";
           }}
           className="w-full cursor-pointer bg-[#FFD700] hover:bg-[#E6C200] text-black font-semibold py-3 rounded-md transition-all duration-200"
         >
           Login Again
-        </button>
+        </Button>
 
 
 

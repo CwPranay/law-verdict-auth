@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -121,14 +122,16 @@ export default function DashboardPage() {
               className="w-full bg-[#0B0C0E] border border-[#2A2B2E] text-white p-3 rounded-md focus:outline-none focus:border-[#FFD700] transition"
             />
             <div className="flex justify-center gap-3 mt-4">
-              <button
+              <Button
+              size="lg"
                 onClick={handleSavePhone}
                 disabled={loading}
                 className="bg-[#FFD700] cursor-pointer hover:bg-[#E6C200] text-black font-semibold px-5 py-2 rounded-md transition"
               >
                 {loading ? "Saving..." : "Save"}
-              </button>
-              <button
+              </Button>
+              <Button
+              size="lg"
                 onClick={() => {
                   setIsEditing(false);
                   setPhoneInput("");
@@ -137,7 +140,7 @@ export default function DashboardPage() {
                 className="border border-[#FFD700] text-[#FFD700] cursor-pointer font-semibold px-5 py-2 rounded-md transition"
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           </div>
         ) : savedPhone ? (
@@ -145,6 +148,7 @@ export default function DashboardPage() {
             <p className="text-[#A1A1A1] mb-1 text-sm">Your registered phone number:</p>
             <p className="text-lg font-semibold text-white mb-3">{savedPhone}</p>
             <button
+            
               onClick={() => setIsEditing(true)}
               className="text-[#FFD700] cursor-pointer hover:underline transition"
             >
@@ -154,12 +158,13 @@ export default function DashboardPage() {
         ) : (
           <div className="text-center">
             <p className="text-[#A1A1A1] mb-2">No phone number registered.</p>
-            <button
+            <Button
+            size="lg"
               onClick={() => setIsEditing(true)}
               className="bg-[#FFD700] hover:bg-[#E6C200] text-black font-semibold px-5 py-2 rounded-md transition"
             >
               Add phone number
-            </button>
+            </Button>
           </div>
         )}
 
@@ -180,13 +185,14 @@ export default function DashboardPage() {
 
         
         <div className="mt-10 text-center border-t border-[#1F2023] pt-5">
-          <button
+          <Button
+          size="lg"
            onClick={() => {window.location.href="/api/auth/logout"}}
            
-            className="bg-[#FFD700] cursor-pointer text-black py-3 px-8 rounded-[10px] text-sm hover:bg-[#E6C200] transition font-medium"
+            className="bg-[#FFD700] cursor-pointer text-black   text-sm hover:bg-[#E6C200] transition font-medium"
           >
             Logout
-            </button>
+            </Button>
           
         </div>
       </div>

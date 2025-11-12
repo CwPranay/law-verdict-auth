@@ -21,7 +21,7 @@ export default async function middleware(req: NextRequest) {
     //  Check for device cookie
     const deviceId = req.cookies.get("deviceId")?.value;
     if (!deviceId) {
-      console.warn("⚠️ Missing deviceId cookie, redirecting to login");
+      console.warn(" Missing deviceId cookie, redirecting to login");
       const loginUrl = new URL("/api/auth/login", req.url);
       loginUrl.searchParams.set("returnTo", "/dashboard");
       return NextResponse.redirect(loginUrl);
@@ -37,7 +37,7 @@ export default async function middleware(req: NextRequest) {
 
     //  Inactive session — force logout properly
     if (!sessionDoc) {
-      console.log(`⚠️ Inactive session detected for device ${deviceId}`);
+      console.log(` Inactive session detected for device ${deviceId}`);
 
       const logoutUrl = new URL("/forced-logout", req.url);
       logoutUrl.searchParams.set("reason", "session_expired");

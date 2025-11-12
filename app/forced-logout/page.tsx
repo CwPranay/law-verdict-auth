@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 
@@ -8,18 +8,16 @@ import { useEffect } from "react";
 export const dynamic = "force-dynamic";
 
 export default function ForcedLogoutPage() {
-  const router =useRouter()
-   useEffect(() => {
-    // Check a flag to confirm if middleware sent the user here
-    const logoutFlag = sessionStorage.getItem("forcedLogout");
-    if (!logoutFlag) {
-      // If no flag — redirect to login/home to block direct access
+  const router = useRouter()
+  const params = useSearchParams();
+  useEffect(() => {
+    const reason = params?.get("reason");
+
+    // prevent direct manual access
+    if (reason !== "session_expired") {
       router.replace("/");
-    } else {
-      // Remove the flag after showing this page once
-      sessionStorage.removeItem("forcedLogout");
     }
-  }, [router]);
+  }, [router, params]);
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-black text-white px-4">
 
@@ -42,7 +40,7 @@ export default function ForcedLogoutPage() {
 
 
         <Button
-        size="lg"
+          size="lg"
           onClick={() => {
             window.location.href = "/api/auth/login?returnTo=/dashboard";
           }}

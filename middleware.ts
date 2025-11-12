@@ -43,6 +43,10 @@ export default async function middleware(req: NextRequest) {
       const logoutRes = NextResponse.redirect(new URL("/forced-logout", req.url));
       logoutRes.cookies.set("appSession", "", { maxAge: 0, path: "/" });
       logoutRes.cookies.set("deviceId", "", { maxAge: 0, path: "/" });
+      logoutRes.headers.set(
+        "Set-Cookie",
+        "forcedLogout=true; Path=/; Max-Age=10; HttpOnly; SameSite=Lax"
+      );
 
       return logoutRes;
     }

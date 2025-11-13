@@ -1,36 +1,32 @@
+// app/page.tsx
 "use client";
-import { Button } from "@/components/ui/button"
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import { Link } from "lucide-react";
 
 export default function Home() {
-  return (
-    <main className="flex flex-col items-center justify-center h-screen bg-linear-to-b from-[#0B0B0B] to-[#151515] text-white font-sans px-6">
-      
-      <h1 className="text-5xl font-extrabold mb-4 tracking-wide">
-        <span className="text-[#FFD700] ">
-          Law&nbsp;& Verdict
-        </span>
-        
-      </h1>
+  const { user, isLoading } = useUser();
+  const router = useRouter();
+  useEffect(() => {
+    if (!isLoading && user) router.replace("/dashboard");
+  }, [user, isLoading, router]);
 
-      
-      <p className="text-gray-400 text-center mb-8 max-w-md text-lg leading-relaxed">
+  if (isLoading) return <p>Loading...</p>;
+
+  return (
+    <main className="flex flex-col items-center justify-center min-h-screen text-center">
+      <h1 className="text-4xl font-bold mb-4">Law & Verdict</h1>
+      <p className="mb-6">
         Securely access your legal insights and case management with confidence.
       </p>
-
-      
-      <Button
-      size="lg"
-        onClick={() => {
-          window.location.href = "/api/auth/login?returnTo=/dashboard";
-        }}
-        className=" text-black font-semibold bg-[#FFD700] rounded-md overflow-hidden transition-all duration-300 hover:bg-[#EAB308] shadow-[0_0_5px_rgba(255,215,0,0.4)] hover:shadow-[0_0_5px_rgba(255,215,0,0.6)]"
+      <Link
+        href="/api/auth/login"
+        className="bg-yellow-400 text-black font-semibold px-6 py-2 rounded-lg hover:bg-yellow-500"
       >
         Login
-        
-      </Button>
-
-      
-      
+      </Link>
     </main>
   );
 }

@@ -55,8 +55,8 @@ const afterCallback = async (req, res, session) => {
     });
 
     const existing = res.getHeader("Set-Cookie");
-    const newCookie = `deviceId=${deviceId}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000${process.env.NODE_ENV === "production" ? "; Secure" : ""
-        }`;
+    const newCookie = `deviceId=${deviceId}; Path=/; HttpOnly; SameSite=None; Max-Age=2592000${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
+
 
     if (existing) {
         res.setHeader("Set-Cookie", [existing, newCookie].flat());

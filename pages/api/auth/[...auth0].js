@@ -23,6 +23,8 @@ const afterCallback = async (req, res, session) => {
             updatedAt: new Date(),
         });
     }
+    // Here we safely create a new device session
+    const deviceId = uuidv4();
 
     // COUNT BEFORE CREATING NEW SESSION
     const activeCount = await sessions.countDocuments({ userId, isActive: true });
@@ -30,14 +32,14 @@ const afterCallback = async (req, res, session) => {
     if (activeCount >= MAX_DEVICES) {
         // 👉 DO NOT create new session
         return {
-            redirectTo: `/session-overflow?limit=true&user=${encodeURIComponent(
+            redirectTo: `/session-overflow?overflow=true&userId=${encodeURIComponent(
                 userId
-            )}`,
+            )}&deviceId=${deviceId}`,
         };
+
     }
 
-    // Here we safely create a new device session
-    const deviceId = uuidv4();
+
     await sessions.insertOne({
         userId,
         deviceId,

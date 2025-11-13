@@ -22,13 +22,7 @@ function SessionOverflowContent() {
   const [sessions, setSessions] = useState<SessionType[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  if (!userId || !currentDeviceId) {
-    return (
-      <main className="text-white flex items-center justify-center min-h-screen">
-        <p>Invalid session. Please login again.</p>
-      </main>
-    );
-  }
+
 
   useEffect(() => {
     async function loadSessions() {
@@ -43,6 +37,13 @@ function SessionOverflowContent() {
     }
     loadSessions();
   }, [userId]);
+  if (!userId || !currentDeviceId) {
+    return (
+      <main className="text-white flex items-center justify-center min-h-screen">
+        <p>Invalid session. Please login again.</p>
+      </main>
+    );
+  }
 
   async function handleRemove(deviceIdToRemove: string) {
     setLoading(true);

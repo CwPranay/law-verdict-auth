@@ -1,10 +1,11 @@
+import {ConnectToDatabase} from "../../lib/db"
 import { NextResponse } from "next/server";
-import { ConnectToDatabase } from "../../lib/db";
 
 export async function GET(req) {
   try {
     const url = new URL(req.url);
     const userId = url.searchParams.get("userId");
+
     if (!userId) {
       return NextResponse.json({ error: "Missing userId" }, { status: 400 });
     }
@@ -16,33 +17,36 @@ export async function GET(req) {
 
     return NextResponse.json(user || {});
   } catch (error) {
-    console.error("GET /api/users error details:", error);
+    console.error("GET /api/users error:", error);
     return NextResponse.json(
       { error: "Failed to fetch user", details: error.message },
       { status: 500 }
     );
   }
 }
-
 export async function POST(req) {
   try {
     const body = await req.json();
-    if (!body?.userId) {
+    const userId = body?.userId;
+
+    if (!userId) {
       return NextResponse.json({ error: "Missing user id" }, { status: 400 });
     }
 
     const db = await ConnectToDatabase();
+    const users = db.collection("users");
+
+    const existing = await users.findOne({ userId });
 
     const data = {
-      userId: body.userId,
-      name: body.name || "",
-      email: body.email || "",
-      phone: body.phone || "",
+      name: body.name ?? existing?.name ?? null,
+      email: body.email ?? existing?.email ?? null,
+      phone: body.phone ?? existing?.phone ?? null,
       updatedAt: new Date(),
     };
 
-    await db.collection("users").updateOne(
-      { userId: body.userId },
+    await users.updateOne(
+      { userId },
       { $set: data },
       { upsert: true }
     );

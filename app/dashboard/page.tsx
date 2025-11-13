@@ -12,6 +12,25 @@ type UserRecord = {
 };
 
 export default function DashboardPage() {
+  // Device validation check — ensures this device session is valid
+  useEffect(() => {
+    async function validate() {
+      try {
+        const res = await fetch("/api/validate-device");
+        const data = await res.json();
+
+        if (data.logout) {
+          window.location.href = "/forced-logout";
+        }
+      } catch (err) {
+        console.error("Device validation error:", err);
+        window.location.href = "/forced-logout";
+      }
+    }
+
+    validate();
+  }, []);
+
   const { user, error, isLoading } = useUser();
 
   const [savedUser, setSavedUser] = useState<UserRecord | null>(null);
@@ -148,7 +167,7 @@ export default function DashboardPage() {
   return (
     <main className="flex items-center justify-center min-h-screen bg-[#0B0C0E] text-white px-4">
       <div className="bg-[#141518] p-10 rounded-2xl border border-[#1F2023] shadow-[0_0_5px_rgba(255,215,0,0.1)] max-w-lg w-full">
-        
+
         {/* Header */}
         <div className="text-center mb-8">
           <div className="w-20 h-20 mx-auto rounded-full bg-[#FFD700] flex items-center justify-center text-black font-bold text-3xl shadow-md">

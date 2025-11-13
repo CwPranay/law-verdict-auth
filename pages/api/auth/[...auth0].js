@@ -10,9 +10,8 @@ const afterCallback = async (req, res, session) => {
 
     const userId = session.user.sub;
 
-    // ----- USER CREATION LOGIC (FIX) -----
+    // Create user record if missing
     const existingUser = await users.findOne({ userId });
-
     if (!existingUser) {
         await users.insertOne({
             userId,
@@ -21,48 +20,43 @@ const afterCallback = async (req, res, session) => {
             picture: session.user.picture || null,
             phone: null,
             createdAt: new Date(),
-            updatedAt: new Date()
+            updatedAt: new Date(),
         });
     }
-    // ----- END FIX -----
 
-    const deviceId = uuidv4();
-    const userAgent = req.headers["user-agent"] || "unknown";
-    const ip =
-        req.headers["x-forwarded-for"] ||
-        req.connection?.remoteAddress ||
-        req.socket?.remoteAddress ||
-        "unknown";
-
+    // COUNT BEFORE CREATING NEW SESSION
     const activeCount = await sessions.countDocuments({ userId, isActive: true });
 
     if (activeCount >= MAX_DEVICES) {
+        // 👉 DO NOT create new session
         return {
-            redirectTo: `/session-overflow?userId=${encodeURIComponent(
+            redirectTo: `/session-overflow?limit=true&user=${encodeURIComponent(
                 userId
-            )}&deviceId=${deviceId}`,
+            )}`,
         };
     }
 
+    // Here we safely create a new device session
+    const deviceId = uuidv4();
     await sessions.insertOne({
         userId,
         deviceId,
-        userAgent,
-        ip,
+        userAgent: req.headers["user-agent"] || "unknown",
+        ip:
+            req.headers["x-forwarded-for"] ||
+            req.connection?.remoteAddress ||
+            req.socket?.remoteAddress ||
+            "unknown",
         createdAt: new Date(),
         lastActive: new Date(),
         isActive: true,
     });
 
-    const existing = res.getHeader("Set-Cookie");
-    const newCookie = `deviceId=${deviceId}; Path=/; HttpOnly; SameSite=None; Max-Age=2592000${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
+    // Set cookie
+    const cookie = `deviceId=${deviceId}; Path=/; HttpOnly; SameSite=None${process.env.NODE_ENV === "production" ? "; Secure" : ""
+        }; Max-Age=2592000`;
 
-
-    if (existing) {
-        res.setHeader("Set-Cookie", [existing, newCookie].flat());
-    } else {
-        res.setHeader("Set-Cookie", newCookie);
-    }
+    res.setHeader("Set-Cookie", cookie);
 
     return session;
 };

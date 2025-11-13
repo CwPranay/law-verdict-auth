@@ -1,4 +1,6 @@
-export const runtime = "nodejs";
+
+export const runtime = "edge";
+
 
 import { getSession } from "@auth0/nextjs-auth0";
 import { NextRequest, NextResponse } from "next/server";
@@ -9,6 +11,10 @@ export default async function middleware(req: NextRequest) {
   const url = req.nextUrl.clone();
 
   try {
+    if (req.nextUrl.pathname.includes("/api/auth")) {
+      return NextResponse.next();
+    }
+
     // ✅ 1. Allow Auth0 routes & callback
     if (url.pathname.startsWith("/api/auth")) return res;
 
@@ -58,12 +64,7 @@ export default async function middleware(req: NextRequest) {
 
       logoutRes.cookies.set("appSession", "", { maxAge: 0, path: "/" });
       logoutRes.cookies.set("deviceId", "", { maxAge: 0, path: "/" });
-      logoutRes.cookies.set("forceLogoutFlag", "true", {
-        maxAge: 60 * 60 * 24 * 7,
-        path: "/",
-        httpOnly: false,
-        sameSite: "lax",
-      });
+
 
       return logoutRes;
     }

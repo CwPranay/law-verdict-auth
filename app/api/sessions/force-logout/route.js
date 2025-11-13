@@ -1,3 +1,4 @@
+//forced logout route
 import { NextResponse } from "next/server";
 import { ConnectToDatabase } from "../../../lib/db";
 

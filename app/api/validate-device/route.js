@@ -1,3 +1,4 @@
+//validate device route
 import { NextResponse } from "next/server";
 import { getSession } from "@auth0/nextjs-auth0";
 import { ConnectToDatabase } from "@/app/lib/db";

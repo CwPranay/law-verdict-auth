@@ -1,3 +1,4 @@
+//foreced logout page
 "use client";
 
 import { useEffect } from "react";
@@ -13,7 +14,8 @@ export default function ForcedLogoutPage() {
 
   const handleLoginAgain = () => {
     document.cookie = "forceLogoutFlag=; Max-Age=0; Path=/";
-    window.location.href = "/api/auth/login?returnTo=/dashboard";
+    window.location.replace("/api/auth/login?returnTo=/dashboard");
+
   };
 
   return (

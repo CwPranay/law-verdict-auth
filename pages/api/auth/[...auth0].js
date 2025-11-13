@@ -1,3 +1,4 @@
+//auth0.js
 import { handleAuth, handleCallback } from "@auth0/nextjs-auth0";
 import { ConnectToDatabase } from "../../../app/lib/db";
 import { v4 as uuidv4 } from "uuid";
@@ -32,7 +33,7 @@ const afterCallback = async (req, res, session) => {
     if (activeCount >= MAX_DEVICES) {
         // 👉 DO NOT create new session
         return {
-            redirectTo: `/session-overflow?overflow=true&userId=${encodeURIComponent(
+            redirectTo: `/session-overflow?&userId=${encodeURIComponent(
                 userId
             )}&deviceId=${deviceId}`,
         };

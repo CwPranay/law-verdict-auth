@@ -1,3 +1,4 @@
+//session overflow page
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
@@ -21,6 +22,13 @@ function SessionOverflowContent() {
   const [sessions, setSessions] = useState<SessionType[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  if (!userId || !currentDeviceId) {
+    return (
+      <main className="text-white flex items-center justify-center min-h-screen">
+        <p>Invalid session. Please login again.</p>
+      </main>
+    );
+  }
 
   useEffect(() => {
     async function loadSessions() {

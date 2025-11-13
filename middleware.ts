@@ -1,5 +1,6 @@
 
-export const runtime = "edge";
+export const runtime = "experimental-edge";
+
 
 
 import { getSession } from "@auth0/nextjs-auth0";

@@ -3,15 +3,20 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import Link from "next/link";
+
+
 
 export default function Home() {
   const { user, isLoading } = useUser();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && user) router.replace("/dashboard");
+    const onOverflow = window.location.pathname.startsWith("/session-overflow");
+    if (!isLoading && user && !onOverflow) {
+      router.replace("/dashboard");
+    }
   }, [user, isLoading, router]);
+
 
   if (isLoading) {
     return (
@@ -35,7 +40,7 @@ export default function Home() {
         </p>
 
         {/* Login Button */}
-         <button
+        <button
           onClick={() => window.location.href = "/api/auth/login"}
           className="bg-yellow-400 text-black font-semibold px-6 py-3 sm:px-8 sm:py-4 md:px-10 md:py-4 rounded-lg hover:bg-yellow-500 active:bg-yellow-600 duration-200 text-sm sm:text-base md:text-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-transform cursor-pointer"
         >

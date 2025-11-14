@@ -17,7 +17,7 @@ function SessionOverflowContent() {
   const params = useSearchParams();
 
   const userId = params?.get("userId");
-  const currentDeviceId = params?.get("deviceId");
+  const currentDeviceId = params?.get("deviceId") || null;
 
   const [sessions, setSessions] = useState<SessionType[]>([]);
   const [loading, setLoading] = useState(false);
@@ -37,13 +37,14 @@ function SessionOverflowContent() {
     }
     loadSessions();
   }, [userId]);
-  if (!userId || !currentDeviceId) {
+  if (!userId) {
     return (
       <main className="text-white flex items-center justify-center min-h-screen">
-        <p>Invalid session. Please login again.</p>
+        <p>Invalid request. Please login again.</p>
       </main>
     );
   }
+
 
   async function handleRemove(deviceIdToRemove: string) {
     setLoading(true);
@@ -52,10 +53,18 @@ function SessionOverflowContent() {
       const res = await fetch("/api/sessions/force-logout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, deviceIdToRemove, currentDeviceId }),
+        body: JSON.stringify({ userId, deviceIdToRemove }),
       });
       if (res.ok) {
-        window.location.href = "/api/auth/login?returnTo=/dashboard";
+        // After removing old session, create new session for current device
+        if (currentDeviceId) {
+          await fetch("/api/sessions/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId, deviceId: currentDeviceId }),
+          });
+        }
+        window.location.href = "/dashboard";
       } else {
         const data = await res.json();
         setError(data.error || "Failed to logout selected device");

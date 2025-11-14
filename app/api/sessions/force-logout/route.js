@@ -1,4 +1,5 @@
-//forced logout route
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 import { ConnectToDatabase } from "../../../lib/db";
 
@@ -13,10 +14,13 @@ export async function POST(req) {
     const db = await ConnectToDatabase();
     const sessions = db.collection("sessions");
 
-    // Delete selected session only
-    const result = await sessions.deleteOne({ userId, deviceId: deviceIdToRemove });
+    // Mark selected session as inactive
+    const result = await sessions.updateOne(
+        { userId, deviceId: deviceIdToRemove },
+        { $set: { isActive: false, removedAt: new Date() } }
+      );
 
-    if (result.deletedCount === 0) {
+    if (result.matchedCount === 0) {
       return NextResponse.json({ message: "Session not found" }, { status: 404 });
     }
 

@@ -1,4 +1,5 @@
-//session list rpute
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 import { ConnectToDatabase } from "../../../lib/db";
 

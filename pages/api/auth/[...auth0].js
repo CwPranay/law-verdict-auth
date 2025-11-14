@@ -1,8 +1,9 @@
-//auth0.js
+// auth0.js
 import { handleAuth, handleCallback } from "@auth0/nextjs-auth0";
 import { ConnectToDatabase } from "../../../app/lib/db";
 import { v4 as uuidv4 } from "uuid";
 import { MAX_DEVICES } from "../../../app/config";
+import { NextResponse } from "next/server";
 
 const afterCallback = async (req, res, session) => {
     const db = await ConnectToDatabase();
@@ -11,7 +12,7 @@ const afterCallback = async (req, res, session) => {
 
     const userId = session.user.sub;
 
-    // Create user record if missing
+    // ensure user exists
     const existingUser = await users.findOne({ userId });
     if (!existingUser) {
         await users.insertOne({
@@ -25,22 +26,24 @@ const afterCallback = async (req, res, session) => {
         });
     }
 
-
-    // COUNT BEFORE CREATING NEW SESSION
+    // COUNT ACTIVE DEVICES BEFORE ADDING NEW ONE
     const activeCount = await sessions.countDocuments({ userId, isActive: true });
 
     if (activeCount >= MAX_DEVICES) {
-        // 👉 DO NOT create new session
-        return {
-            redirectTo: `/session-overflow?overflow=true&userId=${encodeURIComponent(userId)}`
-        };
-
-
+        const base = `${req.headers["x-forwarded-proto"] || "http"}://${req.headers.host}`;
+        const url = new URL("/session-overflow", base);
+        url.searchParams.set("userId", userId);
+        return res.redirect(url.toString());
     }
-    // Here we safely create a new device session
+
+
+    // generate new deviceId for this login
     const deviceId = uuidv4();
 
+    // Save to Auth0 session (THIS FIXES EVERYTHING)
+    session.user.deviceId = deviceId;
 
+    // Save in DB
     await sessions.insertOne({
         userId,
         deviceId,
@@ -55,27 +58,9 @@ const afterCallback = async (req, res, session) => {
         isActive: true,
     });
 
-    // Set cookie
-    const cookie = `deviceId=${deviceId}; Path=/; HttpOnly; SameSite=None${process.env.NODE_ENV === "production" ? "; Secure" : ""
-        }; Max-Age=2592000`;
-
-    res.setHeader("Set-Cookie", cookie);
-
-    return session;
+    return session; // Auth0 will store deviceId inside appSession cookie
 };
 
 export default handleAuth({
-    session: {
-        rolling: true,
-        rollingDuration: 60 * 60 * 24 * 7,
-        absoluteDuration: 60 * 60 * 24 * 30,
-        cookie: {
-            transient: false,
-            lifetime: 60 * 60 * 24 * 7,
-            sameSite: "None",
-            secure: process.env.NODE_ENV === "production" // => TRUE in Vercel
-
-        },
-    },
     callback: handleCallback({ afterCallback }),
 });

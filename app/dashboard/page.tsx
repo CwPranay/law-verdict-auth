@@ -13,8 +13,19 @@ type UserRecord = {
 };
 
 export default function DashboardPage() {
+  const { user, error, isLoading } = useUser();
+
   // Device validation check — ensures this device session is valid
   useEffect(() => {
+    // Don't validate until we know if user is authenticated
+    if (isLoading) return;
+    
+    // If no user, redirect to login
+    if (!user) {
+      window.location.href = "/api/auth/login";
+      return;
+    }
+
     async function validate() {
       try {
         const res = await fetch("/api/validate-device");
@@ -30,9 +41,7 @@ export default function DashboardPage() {
     }
 
     validate();
-  }, []);
-
-  const { user, error, isLoading } = useUser();
+  }, [user, isLoading]);
 
   const [savedUser, setSavedUser] = useState<UserRecord | null>(null);
   const [phoneInput, setPhoneInput] = useState("");

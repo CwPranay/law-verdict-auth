@@ -1,53 +1,56 @@
-//validate device route
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 import { getSession } from "@auth0/nextjs-auth0";
 import { ConnectToDatabase } from "@/app/lib/db";
+import { MAX_DEVICES } from "@/app/config";
 
 export async function GET(req) {
   try {
-    // Auth0 session (server-side)
     const res = new NextResponse();
     const session = await getSession(req, res);
 
-    // If Auth0 session is missing → logout
     if (!session?.user) {
-      return NextResponse.json({ logout: true, reason: "no_auth_session" });
+      const out = NextResponse.json({ logout: true, reason: "no_auth_session" });
+      out.cookies.set("forceLogoutFlag", "true", { path: "/", maxAge: 300 });
+      return out;
     }
 
-    // Device ID cookie
-    const deviceId = req.cookies.get("deviceId")?.value;
+    const deviceId = session.user.deviceId;
 
-    // No device cookie → allow first load after login
-    if (!deviceId) {
-      return NextResponse.json({ ok: true });
-    }
-
-    // Database lookup
     const db = await ConnectToDatabase();
     const sessions = db.collection("sessions");
 
-    const record = await sessions.findOne({
+    const activeCount = await sessions.countDocuments({
       userId: session.user.sub,
-      deviceId,
       isActive: true,
     });
 
-    // Session is missing in DB → force logout
-    if (!record) {
-      return NextResponse.json({
-        logout: true,
-        reason: "device_session_invalid",
-      });
+    // New browser (no deviceId) but already at max devices → block
+    if (!deviceId && activeCount >= MAX_DEVICES) {
+      const out = NextResponse.json({ logout: true, reason: "too_many_devices" });
+      out.cookies.set("forceLogoutFlag", "true", { path: "/", maxAge: 300 });
+      return out;
     }
 
-    // Everything ok
-    return NextResponse.json({ ok: true });
+    // deviceId exists → verify
+    if (deviceId) {
+      const found = await sessions.findOne({
+        userId: session.user.sub,
+        deviceId,
+        isActive: true,
+      });
 
+      if (!found) {
+        const out = NextResponse.json({ logout: true, reason: "invalid_device" });
+        out.cookies.set("forceLogoutFlag", "true", { path: "/", maxAge: 300 });
+        return out;
+      }
+    }
+
+    return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("validate-device error:", err);
-    return NextResponse.json({
-      logout: true,
-      reason: "server_error",
-    });
+    return NextResponse.json({ logout: true, reason: "server_error" });
   }
 }

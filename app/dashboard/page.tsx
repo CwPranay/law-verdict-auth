@@ -4,6 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 type UserRecord = {
   userId: string;
@@ -14,15 +15,20 @@ type UserRecord = {
 
 export default function DashboardPage() {
   const { user, error, isLoading } = useUser();
+  const [savedUser, setSavedUser] = useState<UserRecord | null>(null);
+  const [phoneInput, setPhoneInput] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [isValidating, setIsValidating] = useState(true);
+  const router = useRouter()
 
   // Device validation check — ensures this device session is valid
   useEffect(() => {
-    
     if (isLoading) return;
-    
-    
+
     if (!user) {
-      window.location.href = "/api/auth/login";
+      router.replace("/api/auth/login");
       return;
     }
 
@@ -32,24 +38,32 @@ export default function DashboardPage() {
         const data = await res.json();
 
         if (data.logout) {
-          window.location.href = "/forced-logout";
+          router.replace("/forced-logout");
+          return;
         }
       } catch (err) {
         console.error("Device validation error:", err);
-        window.location.href = "/forced-logout";
+        router.replace("/forced-logout");
+        return;
       }
+
+      setIsValidating(false);
     }
 
     validate();
-  }, [user, isLoading]);
+  }, [user, isLoading, router]);
 
-  const [savedUser, setSavedUser] = useState<UserRecord | null>(null);
-  const [phoneInput, setPhoneInput] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  if (isValidating) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+        <p className="text-gray-300">Verifying session...</p>
+      </div>
+    );
+  }
 
-  
+
+
+
   useEffect(() => {
     if (!user?.sub) return;
 
@@ -78,7 +92,7 @@ export default function DashboardPage() {
     fetchUser();
   }, [user?.sub]);
 
- 
+
   const handleSavePhone = async () => {
     if (!phoneInput.trim()) {
       setMessage("Enter a valid phone number.");
@@ -131,7 +145,7 @@ export default function DashboardPage() {
     }
   };
 
-  
+
   if (isLoading)
     return (
       <main className="flex items-center justify-center min-h-screen bg-[#0B0C0E] text-[#FFD700]">
@@ -158,7 +172,7 @@ export default function DashboardPage() {
       </main>
     );
 
-  
+
   const finalName =
     savedUser?.name ??
     (user?.name ?? null) ??
@@ -178,7 +192,7 @@ export default function DashboardPage() {
     <main className="flex items-center justify-center min-h-screen bg-[#0B0C0E] text-white px-4">
       <div className="bg-[#141518] p-10 rounded-2xl border border-[#1F2023] shadow-[0_0_5px_rgba(255,215,0,0.1)] max-w-lg w-full">
 
-        
+
         <div className="text-center mb-8">
           <div className="w-20 h-20 mx-auto rounded-full bg-[#FFD700] flex items-center justify-center text-black font-bold text-3xl shadow-md">
             {initialChar}
@@ -189,7 +203,7 @@ export default function DashboardPage() {
 
         <div className="h-px bg-[#1F2023] mb-8" />
 
-        
+
         {loading ? (
           <p className="text-center text-[#A1A1A1]">Loading your phone info...</p>
         ) : isEditing ? (
@@ -252,12 +266,12 @@ export default function DashboardPage() {
           </div>
         )}
 
-        
+
         {message && (
           <p className="mt-5 text-center text-yellow-400 text-sm">{message}</p>
         )}
 
-        
+
         <div className="mt-10 text-center border-t border-[#1F2023] pt-5">
           <Button
             size="lg"

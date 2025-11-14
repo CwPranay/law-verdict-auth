@@ -53,13 +53,7 @@ export default function DashboardPage() {
     validate();
   }, [user, isLoading, router]);
 
-  if (isValidating) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <p className="text-gray-300">Verifying session...</p>
-      </div>
-    );
-  }
+
 
 
 
@@ -144,7 +138,13 @@ export default function DashboardPage() {
       setLoading(false);
     }
   };
-
+  if (isValidating) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+        <p className="text-gray-300">Verifying session...</p>
+      </div>
+    );
+  }
 
   if (isLoading)
     return (

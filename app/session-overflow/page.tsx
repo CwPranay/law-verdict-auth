@@ -56,15 +56,9 @@ function SessionOverflowContent() {
         body: JSON.stringify({ userId, deviceIdToRemove }),
       });
       if (res.ok) {
-        // After removing old session, create new session for current device
-        if (currentDeviceId) {
-          await fetch("/api/sessions/create", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId, deviceId: currentDeviceId }),
-          });
-        }
-        window.location.href = "/dashboard";
+        window.location.href = "/api/auth/login?returnTo=/dashboard";
+        return
+
       } else {
         const data = await res.json();
         setError(data.error || "Failed to logout selected device");
@@ -80,7 +74,7 @@ function SessionOverflowContent() {
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-black text-white px-4">
       <div className="bg-[#111111] p-8 rounded-2xl shadow-[0_0_8px_rgba(255,215,0,0.2)] max-w-lg w-full text-center border border-[#1F1F1F]">
-        
+
         <h1 className="text-2xl font-bold mb-2 text-[#FFD700] tracking-wide">
           Device Limit Reached
         </h1>
@@ -89,7 +83,7 @@ function SessionOverflowContent() {
           Select one to log out and continue.
         </p>
 
-        
+
         <ul className="space-y-3 mb-6">
           {sessions.length === 0 ? (
             <p className="text-gray-400 text-sm">Loading active sessions…</p>
@@ -126,7 +120,7 @@ function SessionOverflowContent() {
           )}
         </ul>
 
-        
+
         <div className="flex flex-col gap-2">
           <Button
             size="lg"

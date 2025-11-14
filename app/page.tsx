@@ -1,30 +1,14 @@
-"use client";
-
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useUser } from "@auth0/nextjs-auth0/client";
+import { getSession } from "@auth0/nextjs-auth0/edge";
+import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import LoginButton from "./loginButton";
 
+export default async function Home() {
+  const session = await getSession();
 
-
-export default function Home() {
-  const { user, isLoading } = useUser();
-  const router = useRouter();
-
-  useEffect(() => {
-    const onOverflow = window.location.pathname.startsWith("/session-overflow");
-    if (!isLoading && user && !onOverflow) {
-      router.replace("/dashboard");
-    }
-  }, [user, isLoading, router]);
-
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <p className="text-lg text-gray-200">Loading...</p>
-      </div>
-    );
+  // If user already logged in → redirect instantly 
+  if (session?.user) {
+    redirect("/dashboard");
   }
 
   return (
@@ -35,19 +19,11 @@ export default function Home() {
           Law & Verdict
         </h1>
 
-
         <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-200 mb-6 sm:mb-8 max-w-xs sm:max-w-md md:max-w-lg mx-auto px-2">
           Securely access your legal insights and case management with confidence.
         </p>
 
-
-        <Button
-          size="lg"
-          onClick={() => window.location.href = "/api/auth/login"}
-          className="bg-yellow-400 text-black font-semibold px-6 py-3 sm:px-8 sm:py-4 md:px-10 md:py-4 rounded-lg hover:bg-yellow-500 active:bg-yellow-600 duration-200 text-sm sm:text-base md:text-lg shadow-md hover:shadow-lg  cursor-pointer"
-        >
-          Login
-        </Button>
+        <LoginButton />
       </div>
     </main>
   );

@@ -1,4 +1,4 @@
-//user route
+
 import {ConnectToDatabase} from "../../lib/db"
 import { NextResponse } from "next/server";
 

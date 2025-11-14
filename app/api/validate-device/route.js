@@ -26,14 +26,14 @@ export async function GET(req) {
       isActive: true,
     });
 
-    // New browser (no deviceId) but already at max devices → block
+    // New browser (no deviceId) but already at max devices = block
     if (!deviceId && activeCount >= MAX_DEVICES) {
       const out = NextResponse.json({ logout: true, reason: "too_many_devices" });
       out.cookies.set("forceLogoutFlag", "true", { path: "/", maxAge: 300 });
       return out;
     }
 
-    // deviceId exists → verify
+    // deviceId exists = verify
     if (deviceId) {
       const found = await sessions.findOne({
         userId: session.user.sub,

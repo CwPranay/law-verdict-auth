@@ -1,4 +1,4 @@
-// auth0.js
+
 import { handleAuth, handleCallback } from "@auth0/nextjs-auth0";
 import { ConnectToDatabase } from "../../../app/lib/db";
 import { v4 as uuidv4 } from "uuid";
@@ -37,13 +37,13 @@ const afterCallback = async (req, res, session) => {
     }
 
 
-    // generate new deviceId for this login
+    
     const deviceId = uuidv4();
 
-    // Save to Auth0 session (THIS FIXES EVERYTHING)
+    
     session.user.deviceId = deviceId;
 
-    // Save in DB
+    
     await sessions.insertOne({
         userId,
         deviceId,

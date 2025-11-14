@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 export function middleware(req) {
   const path = req.nextUrl.pathname;
 
-  // Always allow these:
+  
   if (
     path.startsWith("/session-overflow") ||
     path.startsWith("/forced-logout") ||

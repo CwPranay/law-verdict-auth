@@ -17,7 +17,7 @@ export async function ConnectToDatabase() {
   }
 
   const client = new MongoClient(uri, {
-    serverSelectionTimeoutMS: 5000, // fail faster if cluster unreachable
+    serverSelectionTimeoutMS: 5000, 
   });
 
   await client.connect();

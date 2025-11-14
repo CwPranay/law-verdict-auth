@@ -16,13 +16,13 @@ export async function GET(req) {
     const sessions = await db
       .collection("sessions")
       .find(
-        { userId, isActive: true }, // Only active sessions
-        { projection: { _id: 0 } } // Hide internal MongoDB _id field (cleaner response)
+        { userId, isActive: true }, 
+        { projection: { _id: 0 } } 
       )
       .sort({ createdAt: 1 })
       .toArray();
 
-    //  Handle case when no sessions exist
+    
     if (!sessions.length) {
       return NextResponse.json([], { status: 200 });
     }

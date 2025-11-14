@@ -1,4 +1,4 @@
-//foreced logout page
+
 "use client";
 
 import { useEffect } from "react";

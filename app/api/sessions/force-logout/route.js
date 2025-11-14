@@ -14,7 +14,7 @@ export async function POST(req) {
     const db = await ConnectToDatabase();
     const sessions = db.collection("sessions");
 
-    // Mark selected session as inactive
+    // Marked selected session as inactive
     const result = await sessions.updateOne(
         { userId, deviceId: deviceIdToRemove },
         { $set: { isActive: false, removedAt: new Date() } }
@@ -24,7 +24,7 @@ export async function POST(req) {
       return NextResponse.json({ message: "Session not found" }, { status: 404 });
     }
 
-    //  Return only success — let the client handle re-auth
+    
     return NextResponse.json({ success: true, message: "Device removed successfully" });
   } catch (error) {
     console.error("Error in force-logout:", error);
